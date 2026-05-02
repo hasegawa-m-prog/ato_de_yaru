@@ -39,7 +39,6 @@
             color: var(--text-primary);
         }
 
-        /* ===== Three.js 背景 ===== */
         #bgCanvas {
             position: fixed;
             top: 0; left: 0;
@@ -48,7 +47,6 @@
             pointer-events: none;
         }
 
-        /* ===== 背景光彩 ===== */
         .bg-atmosphere {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -98,7 +96,6 @@
             66% { transform: translate(-60px,-30px); }
         }
 
-        /* ===== 障子格子パターン ===== */
         .shoji-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -111,7 +108,6 @@
             mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
         }
 
-        /* ===== スキャンライン ===== */
         .scanlines {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -126,7 +122,6 @@
             );
         }
 
-        /* ===== フラッシュオーバーレイ ===== */
         .rage-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -142,7 +137,6 @@
             100% { border-color: transparent; background: transparent; }
         }
 
-        /* ===== メインラッパー ===== */
         .main-wrapper {
             position: relative;
             z-index: 10;
@@ -151,22 +145,18 @@
             padding: 56px 24px 100px;
         }
 
-        /* ===== ヘッダー ===== */
         .site-header {
             text-align: center;
             margin-bottom: 64px;
         }
 
         .header-kamon {
-            width: 56px;
-            height: 56px;
+            width: 56px; height: 56px;
             margin: 0 auto 24px;
-            position: relative;
         }
 
         .kamon-svg {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             animation: kamonSpin 30s linear infinite;
             opacity: 0.5;
         }
@@ -213,7 +203,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* ===== ガラスカード ===== */
         .glass-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -229,11 +218,7 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg,
-                transparent 0%,
-                var(--gold) 30%,
-                var(--gold) 70%,
-                transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold) 70%, transparent 100%);
             opacity: 0.4;
         }
 
@@ -250,7 +235,7 @@
             margin-bottom: 32px;
         }
 
-        /* おじいちゃんアイコン（CSSアート） */
+        /* ===== おじいちゃんCSSアート ===== */
         .ojii-avatar {
             flex-shrink: 0;
             width: 88px;
@@ -272,6 +257,7 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: background 0.6s, box-shadow 0.6s;
         }
 
         /* しわ */
@@ -284,6 +270,7 @@
             border-radius: 50%;
         }
 
+        /* ===== まばたきアニメ ===== */
         .ojii-eyes {
             position: absolute;
             top: 28px;
@@ -292,11 +279,12 @@
             display: flex;
             gap: 18px;
             animation: ojiiSquint 6s ease-in-out infinite;
+            transition: gap 0.4s;
         }
 
         @keyframes ojiiSquint {
             0%,85%,100% { transform: translateX(-50%) scaleY(1); }
-            90% { transform: translateX(-50%) scaleY(0.2); }
+            90% { transform: translateX(-50%) scaleY(0.15); }
         }
 
         .ojii-eye {
@@ -304,8 +292,10 @@
             height: 7px;
             background: #2d1a0a;
             border-radius: 50% 50% 40% 40%;
+            transition: height 0.4s, border-radius 0.4s;
         }
 
+        /* ===== 眉毛（JS で角度を直接セット） ===== */
         .ojii-brow {
             position: absolute;
             top: 20px;
@@ -320,15 +310,12 @@
             height: 3px;
             background: #5a3a1a;
             border-radius: 2px;
-            transition: transform 0.3s;
+            transition: transform 0.5s cubic-bezier(0.16,1,0.3,1),
+                        background 0.5s,
+                        height 0.5s;
         }
 
-        .ojii-brow-l { transform: rotate(-8deg); }
-        .ojii-brow-r { transform: rotate(8deg); }
-
-        .ojii-avatar.angry .ojii-brow-l { transform: rotate(-20deg) translateY(-2px); }
-        .ojii-avatar.angry .ojii-brow-r { transform: rotate(20deg) translateY(-2px); }
-
+        /* ===== 口（JS で直接スタイル制御） ===== */
         .ojii-mouth {
             position: absolute;
             bottom: 20px;
@@ -336,16 +323,8 @@
             transform: translateX(-50%);
             width: 22px;
             height: 8px;
-            border-bottom: 2.5px solid #5a3a1a;
             border-radius: 0 0 50% 50%;
-            transition: all 0.3s;
-        }
-
-        .ojii-avatar.angry .ojii-mouth {
-            border-bottom: none;
-            border-top: 2.5px solid #5a3a1a;
-            border-radius: 50% 50% 0 0;
-            bottom: 22px;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
         }
 
         /* 白髪 */
@@ -374,9 +353,17 @@
             opacity: 0.8;
         }
 
-        .ojii-info {
-            flex: 1;
-        }
+        /* ===== 震えアニメ（高レベル用） ===== */
+        @keyframes ojiiShake1 { 0%,100%{transform:rotate(0)}25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)} }
+        @keyframes ojiiShake2 { 0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)} }
+        @keyframes ojiiShake3 { 0%,100%{transform:rotate(0)}20%{transform:rotate(-3deg)}60%{transform:rotate(3deg)} }
+
+        .ojii-avatar.shake1 { animation: ojiiShake1 0.3s ease-in-out infinite; }
+        .ojii-avatar.shake2 { animation: ojiiShake2 0.2s ease-in-out infinite; }
+        .ojii-avatar.shake3 { animation: ojiiShake3 0.15s ease-in-out infinite; }
+
+        /* ===== おじいちゃん情報 ===== */
+        .ojii-info { flex: 1; }
 
         .ojii-name {
             font-size: 22px;
@@ -395,7 +382,6 @@
             opacity: 0.8;
         }
 
-        /* タイプライターセリフ */
         .ojii-speech {
             font-size: 18px;
             font-weight: 400;
@@ -403,7 +389,6 @@
             line-height: 1.7;
             min-height: 60px;
             letter-spacing: 0.05em;
-            position: relative;
         }
 
         .typewriter-cursor {
@@ -501,17 +486,9 @@
             transition: width 1s cubic-bezier(0.16,1,0.3,1);
         }
 
-        .gauge-fill-gold {
-            background: linear-gradient(90deg, rgba(201,168,76,0.3), var(--gold));
-        }
-
-        .gauge-fill-red {
-            background: linear-gradient(90deg, rgba(192,57,43,0.3), var(--vermillion));
-        }
-
-        .gauge-fill-green {
-            background: linear-gradient(90deg, rgba(52,211,153,0.3), #34d399);
-        }
+        .gauge-fill-gold { background: linear-gradient(90deg, rgba(201,168,76,0.3), var(--gold)); }
+        .gauge-fill-red  { background: linear-gradient(90deg, rgba(192,57,43,0.3), var(--vermillion)); }
+        .gauge-fill-green{ background: linear-gradient(90deg, rgba(52,211,153,0.3), #34d399); }
 
         .gauge-pct {
             font-size: 11px;
@@ -522,16 +499,9 @@
         }
 
         /* ===== フォーム ===== */
-        .form-card {
-            padding: 28px 36px;
-            margin-bottom: 20px;
-        }
+        .form-card { padding: 28px 36px; margin-bottom: 20px; }
 
-        .form-inner {
-            display: flex;
-            gap: 12px;
-            align-items: stretch;
-        }
+        .form-inner { display: flex; gap: 12px; align-items: stretch; }
 
         .task-input {
             flex: 1;
@@ -547,10 +517,7 @@
             letter-spacing: 0.05em !important;
         }
 
-        .task-input::placeholder {
-            color: var(--text-muted) !important;
-            font-size: 14px !important;
-        }
+        .task-input::placeholder { color: var(--text-muted) !important; font-size: 14px !important; }
 
         .task-input:focus {
             outline: none !important;
@@ -622,7 +589,7 @@
 
         @keyframes taskSlideIn {
             from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+            to   { opacity: 1; transform: translateX(0); }
         }
 
         .task-item:hover {
@@ -631,11 +598,7 @@
             transform: translateX(6px);
         }
 
-        .task-item.done {
-            opacity: 0.28;
-            border-color: rgba(52,211,153,0.15);
-        }
-
+        .task-item.done { opacity: 0.28; border-color: rgba(52,211,153,0.15); }
         .task-item.done .task-text { text-decoration: line-through; }
 
         .task-num {
@@ -656,11 +619,7 @@
             line-height: 1.5;
         }
 
-        .task-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
+        .task-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
         .btn-task {
             border-radius: 8px;
@@ -679,10 +638,7 @@
             color: #34d399;
         }
 
-        .btn-done:hover {
-            background: rgba(52,211,153,0.16);
-            transform: translateY(-1px);
-        }
+        .btn-done:hover { background: rgba(52,211,153,0.16); transform: translateY(-1px); }
 
         .btn-delete {
             background: var(--vermillion-dim);
@@ -690,16 +646,10 @@
             color: #e57373;
         }
 
-        .btn-delete:hover {
-            background: rgba(192,57,43,0.2);
-            transform: translateY(-1px);
-        }
+        .btn-delete:hover { background: rgba(192,57,43,0.2); transform: translateY(-1px); }
 
         /* ===== 空状態 ===== */
-        .empty-state {
-            padding: 64px 40px;
-            text-align: center;
-        }
+        .empty-state { padding: 64px 40px; text-align: center; }
 
         .empty-divider {
             width: 48px;
@@ -726,8 +676,7 @@
         /* ===== キレポップ ===== */
         .rage-popup {
             position: fixed;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.7);
             opacity: 0;
             z-index: 9999;
@@ -748,9 +697,7 @@
             font-weight: 900;
             letter-spacing: -0.03em;
             color: var(--text-primary);
-            text-shadow:
-                0 0 60px rgba(192,57,43,0.6),
-                0 0 120px rgba(192,57,43,0.3);
+            text-shadow: 0 0 60px rgba(192,57,43,0.6), 0 0 120px rgba(192,57,43,0.3);
             line-height: 1;
             margin-bottom: 12px;
         }
@@ -775,437 +722,730 @@
         }
 
         @keyframes pFly {
-            0% { opacity: 1; transform: translate(0,0) scale(1); }
+            0%   { opacity: 1; transform: translate(0,0) scale(1); }
             100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
         }
 
-        /* ===== スクロールバー ===== */
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(201,168,76,0.2);
-            border-radius: 2px;
-        }
+        ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
     </style>
 </head>
 <body>
 
-    <canvas id="bgCanvas"></canvas>
+<canvas id="bgCanvas"></canvas>
 
-    <div class="bg-atmosphere">
-        <div class="atm-glow atm-glow-1"></div>
-        <div class="atm-glow atm-glow-2"></div>
-        <div class="atm-glow atm-glow-3"></div>
-    </div>
+<div class="bg-atmosphere">
+    <div class="atm-glow atm-glow-1"></div>
+    <div class="atm-glow atm-glow-2"></div>
+    <div class="atm-glow atm-glow-3"></div>
+</div>
 
-    <div class="shoji-overlay"></div>
-    <div class="scanlines"></div>
-    <div class="rage-overlay" id="rageOverlay"></div>
+<div class="shoji-overlay"></div>
+<div class="scanlines"></div>
+<div class="rage-overlay" id="rageOverlay"></div>
 
-    <!-- キレポップアップ -->
-    <div class="rage-popup" id="ragePopup">
-        <div class="rage-main-word" id="rageWord"></div>
-        <div class="rage-sub-word" id="rageSub"></div>
-    </div>
+<div class="rage-popup" id="ragePopup">
+    <div class="rage-main-word" id="rageWord"></div>
+    <div class="rage-sub-word" id="rageSub"></div>
+</div>
 
-    <div class="main-wrapper">
+<div class="main-wrapper">
 
-        <!-- ヘッダー -->
-        <header class="site-header">
-            <div class="header-kamon">
-                <svg class="kamon-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="28" cy="28" r="26" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
-                    <circle cx="28" cy="28" r="20" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/>
-                    <circle cx="28" cy="28" r="3" fill="rgba(201,168,76,0.6)"/>
-                    <line x1="28" y1="2" x2="28" y2="8" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
-                    <line x1="28" y1="48" x2="28" y2="54" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
-                    <line x1="2" y1="28" x2="8" y2="28" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
-                    <line x1="48" y1="28" x2="54" y2="28" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
-                    <line x1="9" y1="9" x2="13" y2="13" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
-                    <line x1="43" y1="43" x2="47" y2="47" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
-                    <line x1="47" y1="9" x2="43" y2="13" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
-                    <line x1="9" y1="47" x2="13" y2="43" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
-                </svg>
-            </div>
-            <p class="header-label">Ancestral Productivity System</p>
-            <h1 class="site-title">
-                あとでやる
-                <span class="title-accent">— 後でやる —</span>
-            </h1>
-            <p class="site-subtitle">わしの時代はそんな甘えは許されなかった</p>
-        </header>
+    <!-- ヘッダー -->
+    <header class="site-header">
+        <div class="header-kamon">
+            <svg class="kamon-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="28" cy="28" r="26" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
+                <circle cx="28" cy="28" r="20" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/>
+                <circle cx="28" cy="28" r="3" fill="rgba(201,168,76,0.6)"/>
+                <line x1="28" y1="2" x2="28" y2="8" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
+                <line x1="28" y1="48" x2="28" y2="54" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
+                <line x1="2" y1="28" x2="8" y2="28" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
+                <line x1="48" y1="28" x2="54" y2="28" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
+                <line x1="9" y1="9" x2="13" y2="13" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
+                <line x1="43" y1="43" x2="47" y2="47" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
+                <line x1="47" y1="9" x2="43" y2="13" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
+                <line x1="9" y1="47" x2="13" y2="43" stroke="rgba(201,168,76,0.4)" stroke-width="0.8"/>
+            </svg>
+        </div>
+        <p class="header-label">Ancestral Productivity System</p>
+        <h1 class="site-title">
+            あとでやる
+            <span class="title-accent">— 後でやる —</span>
+        </h1>
+        <p class="site-subtitle">わしの時代はそんな甘えは許されなかった</p>
+    </header>
 
-        <!-- おじいちゃんダッシュボード -->
-        <div class="glass-card ojii-dashboard mb-4">
+    <!-- おじいちゃんダッシュボード -->
+    <div class="glass-card ojii-dashboard mb-4">
 
-            <div class="dashboard-top">
-                <!-- おじいちゃんCSSアート -->
-                <div class="ojii-avatar" id="ojiiAvatar" onclick="ojiiReact()">
-                    <div class="ojii-face">
-                        <div class="ojii-hair"></div>
-                        <div class="ojii-brow">
-                            <div class="ojii-brow-l"></div>
-                            <div class="ojii-brow-r"></div>
-                        </div>
-                        <div class="ojii-eyes">
-                            <div class="ojii-eye"></div>
-                            <div class="ojii-eye"></div>
-                        </div>
-                        <div class="ojii-mustache"></div>
-                        <div class="ojii-mouth"></div>
+        <div class="dashboard-top">
+            <div class="ojii-avatar" id="ojiiAvatar" onclick="ojiiReact()">
+                <div class="ojii-face" id="ojiiFace">
+                    <div class="ojii-hair"></div>
+                    <div class="ojii-brow">
+                        <div class="ojii-brow-l" id="ojiiB rowL"></div>
+                        <div class="ojii-brow-r" id="ojiiBrowR"></div>
                     </div>
-                </div>
-
-                <div class="ojii-info">
-                    <div class="ojii-name">田中 義雄 翁</div>
-                    <div class="ojii-title">元・高度経済成長期の戦士 / 説教歴 60年</div>
-                    <div class="ojii-speech" id="ojiiSpeech">
-                        <span id="typewriterText"></span><span class="typewriter-cursor"></span>
+                    <div class="ojii-eyes" id="ojiiEyes">
+                        <div class="ojii-eye" id="ojiiEyeL"></div>
+                        <div class="ojii-eye" id="ojiiEyeR"></div>
                     </div>
+                    <div class="ojii-mustache"></div>
+                    <div class="ojii-mouth" id="ojiiMouth"></div>
                 </div>
             </div>
 
-            <!-- メトリクス -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">小言レベル</div>
-                    <div class="metric-value val-ok" id="metricKogoto">0</div>
-                    <div class="metric-unit">/ 100</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">未処理案件</div>
-                    <div class="metric-value val-warn" id="metricTasks">{{ tasks|length }}</div>
-                    <div class="metric-unit">件</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">堪忍袋残量</div>
-                    <div class="metric-value val-ok" id="metricKannin">100</div>
-                    <div class="metric-unit">%</div>
+            <div class="ojii-info">
+                <div class="ojii-name">田中 義雄 翁</div>
+                <div class="ojii-title">元・高度経済成長期の戦士 / 説教歴 60年</div>
+                <div class="ojii-speech" id="ojiiSpeech">
+                    <span id="typewriterText"></span><span class="typewriter-cursor"></span>
                 </div>
             </div>
-
-            <!-- ゲージ -->
-            <div class="gauge-section">
-                <div class="gauge-row">
-                    <span class="gauge-label">武勇伝蓄積</span>
-                    <div class="gauge-track">
-                        <div class="gauge-fill gauge-fill-gold" id="gauge1" style="width:0%"></div>
-                    </div>
-                    <span class="gauge-pct" id="gaugePct1">0%</span>
-                </div>
-                <div class="gauge-row">
-                    <span class="gauge-label">怒り沸点</span>
-                    <div class="gauge-track">
-                        <div class="gauge-fill gauge-fill-red" id="gauge2" style="width:0%"></div>
-                    </div>
-                    <span class="gauge-pct" id="gaugePct2">0%</span>
-                </div>
-                <div class="gauge-row">
-                    <span class="gauge-label">孫への愛情</span>
-                    <div class="gauge-track">
-                        <div class="gauge-fill gauge-fill-green" id="gauge3" style="width:100%"></div>
-                    </div>
-                    <span class="gauge-pct" id="gaugePct3">100%</span>
-                </div>
-            </div>
-
         </div>
 
-        <!-- フォーム -->
-        <div class="glass-card form-card mb-4">
-            <form class="form-inner" action="{% url 'task_create' %}" method="POST">
+        <!-- メトリクス -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">小言レベル</div>
+                <div class="metric-value val-ok" id="metricKogoto">0</div>
+                <div class="metric-unit">/ 100</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">未処理案件</div>
+                <div class="metric-value val-warn" id="metricTasks">{{ tasks|length }}</div>
+                <div class="metric-unit">件</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">堪忍袋残量</div>
+                <div class="metric-value val-ok" id="metricKannin">100</div>
+                <div class="metric-unit">%</div>
+            </div>
+        </div>
+
+        <!-- ゲージ -->
+        <div class="gauge-section">
+            <div class="gauge-row">
+                <span class="gauge-label">武勇伝蓄積</span>
+                <div class="gauge-track">
+                    <div class="gauge-fill gauge-fill-gold" id="gauge1" style="width:0%"></div>
+                </div>
+                <span class="gauge-pct" id="gaugePct1">0%</span>
+            </div>
+            <div class="gauge-row">
+                <span class="gauge-label">怒り沸点</span>
+                <div class="gauge-track">
+                    <div class="gauge-fill gauge-fill-red" id="gauge2" style="width:0%"></div>
+                </div>
+                <span class="gauge-pct" id="gaugePct2">0%</span>
+            </div>
+            <div class="gauge-row">
+                <span class="gauge-label">孫への愛情</span>
+                <div class="gauge-track">
+                    <div class="gauge-fill gauge-fill-green" id="gauge3" style="width:100%"></div>
+                </div>
+                <span class="gauge-pct" id="gaugePct3">100%</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- フォーム -->
+    <div class="glass-card form-card mb-4">
+        <form class="form-inner" action="{% url 'task_create' %}" method="POST">
+            {% csrf_token %}
+            <input type="text" name="title"
+                class="form-control task-input"
+                placeholder="積み上がる怠惰の証拠を入力せよ...">
+            <button type="submit" class="btn-add">登録</button>
+        </form>
+    </div>
+
+    <!-- タスクリスト -->
+    <div class="list-header">
+        <span class="list-label">Pending Tasks</span>
+        <span class="list-badge">{{ tasks|length }} 件</span>
+    </div>
+
+    {% for task in tasks %}
+    <div class="glass-card task-item {% if task.is_done %}done{% endif %}">
+        <span class="task-num">{{ forloop.counter }}</span>
+        <span class="task-text">{{ task.title }}</span>
+        <div class="task-actions">
+            {% if not task.is_done %}
+            <form action="{% url 'task_done' task.pk %}" method="POST" style="display:inline">
                 {% csrf_token %}
-                <input type="text" name="title"
-                    class="form-control task-input"
-                    placeholder="積み上がる怠惰の証拠を入力せよ...">
-                <button type="submit" class="btn-add">登録</button>
+                <button class="btn-task btn-done" type="submit">DONE</button>
+            </form>
+            {% endif %}
+            <form action="{% url 'task_delete' task.pk %}" method="POST" style="display:inline">
+                {% csrf_token %}
+                <button class="btn-task btn-delete" type="submit"
+                    onclick="deleteParticle(event)">DELETE</button>
             </form>
         </div>
-
-        <!-- タスクリスト -->
-        <div class="list-header">
-            <span class="list-label">Pending Tasks</span>
-            <span class="list-badge">{{ tasks|length }} 件</span>
-        </div>
-
-        {% for task in tasks %}
-        <div class="glass-card task-item {% if task.is_done %}done{% endif %}">
-            <span class="task-num">{{ forloop.counter }}</span>
-            <span class="task-text">{{ task.title }}</span>
-            <div class="task-actions">
-                {% if not task.is_done %}
-                <form action="{% url 'task_done' task.pk %}" method="POST" style="display:inline">
-                    {% csrf_token %}
-                    <button class="btn-task btn-done" type="submit">DONE</button>
-                </form>
-                {% endif %}
-                <form action="{% url 'task_delete' task.pk %}" method="POST" style="display:inline">
-                    {% csrf_token %}
-                    <button class="btn-task btn-delete" type="submit"
-                        onclick="deleteParticle(event)">DELETE</button>
-                </form>
-            </div>
-        </div>
-        {% empty %}
-        <div class="glass-card empty-state">
-            <div class="empty-divider"></div>
-            <p class="empty-title">未処理案件なし</p>
-            <p class="empty-sub">
-                「まあ…今日くらいは早う帰りなさい」<br>
-                — 田中 義雄 翁
-            </p>
-        </div>
-        {% endfor %}
-
     </div>
+    {% empty %}
+    <div class="glass-card empty-state">
+        <div class="empty-divider"></div>
+        <p class="empty-title">未処理案件なし</p>
+        <p class="empty-sub">
+            「まあ…今日くらいは早う帰りなさい」<br>
+            — 田中 義雄 翁
+        </p>
+    </div>
+    {% endfor %}
 
-    <script>
-    // ===== Three.js 背景 =====
-    (function() {
-        const canvas = document.getElementById('bgCanvas');
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+</div>
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.z = 7;
+<script>
+// ============================================================
+// Three.js 背景
+// ============================================================
+(function() {
+    const canvas = document.getElementById('bgCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // 竹林風ライン群
-        const lineGroup = new THREE.Group();
-        for (let i = 0; i < 40; i++) {
-            const h = 8 + Math.random() * 6;
-            const geo = new THREE.CylinderGeometry(0.008, 0.012, h, 4);
-            const mat = new THREE.MeshBasicMaterial({
-                color: Math.random() > 0.5 ? 0xc9a84c : 0x2d4a1a,
-                transparent: true,
-                opacity: 0.04 + Math.random() * 0.06,
-            });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(
-                (Math.random() - 0.5) * 22,
-                (Math.random() - 0.5) * 4,
-                (Math.random() - 0.5) * 6
-            );
-            mesh.userData = { swaySpeed: 0.3 + Math.random() * 0.5, swayOffset: Math.random() * Math.PI * 2 };
-            lineGroup.add(mesh);
-        }
-        scene.add(lineGroup);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 7;
 
-        // 墨のしずく風パーティクル
-        const ptCount = 200;
-        const ptPos = new Float32Array(ptCount * 3);
-        const ptVel = [];
+    // 竹林風ライン群
+    const lineGroup = new THREE.Group();
+    for (let i = 0; i < 40; i++) {
+        const h = 8 + Math.random() * 6;
+        const geo = new THREE.CylinderGeometry(0.008, 0.012, h, 4);
+        const mat = new THREE.MeshBasicMaterial({
+            color: Math.random() > 0.5 ? 0xc9a84c : 0x2d4a1a,
+            transparent: true,
+            opacity: 0.04 + Math.random() * 0.06,
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(
+            (Math.random() - 0.5) * 22,
+            (Math.random() - 0.5) * 4,
+            (Math.random() - 0.5) * 6
+        );
+        mesh.userData = { swaySpeed: 0.3 + Math.random() * 0.5, swayOffset: Math.random() * Math.PI * 2 };
+        lineGroup.add(mesh);
+    }
+    scene.add(lineGroup);
+
+    // 墨のしずくパーティクル
+    const ptCount = 200;
+    const ptPos = new Float32Array(ptCount * 3);
+    const ptVel = [];
+    for (let i = 0; i < ptCount; i++) {
+        ptPos[i*3]   = (Math.random() - 0.5) * 24;
+        ptPos[i*3+1] = (Math.random() - 0.5) * 14;
+        ptPos[i*3+2] = (Math.random() - 0.5) * 8;
+        ptVel.push({ x: (Math.random() - 0.5) * 0.003, y: -0.005 - Math.random() * 0.008 });
+    }
+    const ptGeo = new THREE.BufferGeometry();
+    ptGeo.setAttribute('position', new THREE.BufferAttribute(ptPos, 3));
+    const ptMat = new THREE.PointsMaterial({ size: 0.025, color: 0xc9a84c, transparent: true, opacity: 0.35 });
+    scene.add(new THREE.Points(ptGeo, ptMat));
+
+    // トーラス
+    const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(4, 0.006, 6, 180),
+        new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.08 })
+    );
+    torus.rotation.x = Math.PI / 2.5;
+    scene.add(torus);
+
+    const torus2 = new THREE.Mesh(
+        new THREE.TorusGeometry(6.5, 0.004, 6, 200),
+        new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.04 })
+    );
+    torus2.rotation.x = Math.PI / 2;
+    torus2.rotation.z = Math.PI / 8;
+    scene.add(torus2);
+
+    let mouse = { x: 0, y: 0 };
+    document.addEventListener('mousemove', e => {
+        mouse.x = (e.clientX / window.innerWidth - 0.5) * 0.5;
+        mouse.y = -(e.clientY / window.innerHeight - 0.5) * 0.4;
+    });
+
+    let t = 0;
+    (function tick() {
+        requestAnimationFrame(tick);
+        t += 0.005;
+        lineGroup.children.forEach(m => {
+            m.rotation.z = Math.sin(t * m.userData.swaySpeed + m.userData.swayOffset) * 0.04;
+        });
+        const pos = ptGeo.attributes.position.array;
         for (let i = 0; i < ptCount; i++) {
-            ptPos[i*3]   = (Math.random() - 0.5) * 24;
-            ptPos[i*3+1] = (Math.random() - 0.5) * 14;
-            ptPos[i*3+2] = (Math.random() - 0.5) * 8;
-            ptVel.push({
-                x: (Math.random() - 0.5) * 0.003,
-                y: -0.005 - Math.random() * 0.008,
-            });
+            pos[i*3]   += ptVel[i].x;
+            pos[i*3+1] += ptVel[i].y;
+            if (pos[i*3+1] < -7) pos[i*3+1] = 7;
         }
-        const ptGeo = new THREE.BufferGeometry();
-        ptGeo.setAttribute('position', new THREE.BufferAttribute(ptPos, 3));
-        const ptMat = new THREE.PointsMaterial({
-            size: 0.025,
-            color: 0xc9a84c,
-            transparent: true,
-            opacity: 0.35,
-        });
-        const points = new THREE.Points(ptGeo, ptMat);
-        scene.add(points);
-
-        // 大きなトーラス（縁側の輪）
-        const torusGeo = new THREE.TorusGeometry(4, 0.006, 6, 180);
-        const torusMat = new THREE.MeshBasicMaterial({
-            color: 0xc9a84c,
-            transparent: true,
-            opacity: 0.08,
-        });
-        const torus = new THREE.Mesh(torusGeo, torusMat);
-        torus.rotation.x = Math.PI / 2.5;
-        scene.add(torus);
-
-        const torus2 = new THREE.Mesh(
-            new THREE.TorusGeometry(6.5, 0.004, 6, 200),
-            new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.04 })
-        );
-        torus2.rotation.x = Math.PI / 2;
-        torus2.rotation.z = Math.PI / 8;
-        scene.add(torus2);
-
-        let mouse = { x: 0, y: 0 };
-        document.addEventListener('mousemove', e => {
-            mouse.x = (e.clientX / window.innerWidth - 0.5) * 0.5;
-            mouse.y = -(e.clientY / window.innerHeight - 0.5) * 0.4;
-        });
-
-        let t = 0;
-        function tick() {
-            requestAnimationFrame(tick);
-            t += 0.005;
-
-            // 竹の揺れ
-            lineGroup.children.forEach(m => {
-                m.rotation.z = Math.sin(t * m.userData.swaySpeed + m.userData.swayOffset) * 0.04;
-            });
-
-            // パーティクル落下
-            const pos = ptGeo.attributes.position.array;
-            for (let i = 0; i < ptCount; i++) {
-                pos[i*3]   += ptVel[i].x;
-                pos[i*3+1] += ptVel[i].y;
-                if (pos[i*3+1] < -7) pos[i*3+1] = 7;
-            }
-            ptGeo.attributes.position.needsUpdate = true;
-
-            torus.rotation.z += 0.0008;
-            torus2.rotation.z -= 0.0005;
-
-            camera.position.x += (mouse.x - camera.position.x) * 0.03;
-            camera.position.y += (mouse.y - camera.position.y) * 0.03;
-            camera.lookAt(scene.position);
-
-            renderer.render(scene, camera);
-        }
-        tick();
-
-        window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-        });
+        ptGeo.attributes.position.needsUpdate = true;
+        torus.rotation.z  += 0.0008;
+        torus2.rotation.z -= 0.0005;
+        camera.position.x += (mouse.x - camera.position.x) * 0.03;
+        camera.position.y += (mouse.y - camera.position.y) * 0.03;
+        camera.lookAt(scene.position);
+        renderer.render(scene, camera);
     })();
 
-    // ===== ダッシュボード更新 =====
-    const taskCount = {{ tasks|length }};
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    });
+})();
 
-    (function updateDashboard() {
-        const kogoto = Math.min(taskCount * 15, 100);
-        const kannin = Math.max(100 - taskCount * 13, 0);
-        const bravado = Math.min(taskCount * 12 + 20, 100);
-        const rage = Math.min(taskCount * 16, 100);
-        const love = Math.max(100 - taskCount * 8, 10);
+// ============================================================
+// 小言レベル5%刻み20段階データ
+// ============================================================
+const OJII_LEVELS = [
+    // lv0: 0-4%  穏やか・機嫌よし
+    {
+        browLDeg: -8,  browRDeg: 8,
+        mouthBorderBottom: '2.5px solid #5a3a1a', mouthBorderTop: 'none',
+        mouthBorderRadius: '0 0 50% 50%', mouthBottom: '20px',
+        faceGradient: 'linear-gradient(160deg,#d4a96a 0%,#b8845a 60%,#9a6840 100%)',
+        eyeHeight: '7px', shake: null,
+        speeches: [
+            'まあ…今日はそれほど溜まっておらんな。感心感心。',
+            'うむ、よくやっておる。この調子で頼むぞ。',
+            'わしも若い頃はきちんと片付けておったものじゃ。お前もその心がけは良い。',
+        ]
+    },
+    // lv1: 5-9%  少し気になり始める
+    {
+        browLDeg: -9,  browRDeg: 9,
+        mouthBorderBottom: '2.5px solid #5a3a1a', mouthBorderTop: 'none',
+        mouthBorderRadius: '0 0 50% 50%', mouthBottom: '20px',
+        faceGradient: 'linear-gradient(160deg,#d4a96a 0%,#b8845a 60%,#9a6840 100%)',
+        eyeHeight: '7px', shake: null,
+        speeches: [
+            'ちょっと溜まり始めておるぞ。早めに手を打ちなさい。',
+            'ふむ…少々気になるが、まだ許容範囲じゃな。',
+            'わしが若い頃はこれくらいは朝飯前じゃったが…お前はどうじゃ？',
+        ]
+    },
+    // lv2: 10-14%  軽い小言
+    {
+        browLDeg: -10, browRDeg: 10,
+        mouthBorderBottom: '2px solid #5a3a1a', mouthBorderTop: 'none',
+        mouthBorderRadius: '0 0 30% 30%', mouthBottom: '20px',
+        faceGradient: 'linear-gradient(160deg,#d2a465 0%,#b57d54 60%,#9a6840 100%)',
+        eyeHeight: '6px', shake: null,
+        speeches: [
+            'うーむ、少し増えてきたな。後回しは良くないぞ。',
+            'タスクというのはな、雪だるまのように増えるものじゃ。今のうちじゃ。',
+            'わしはな、積み残しが嫌いなんじゃ。見ておって落ち着かん。',
+        ]
+    },
+    // lv3: 15-19%  小言モード開始
+    {
+        browLDeg: -12, browRDeg: 12,
+        mouthBorderBottom: '2px solid #5a3a1a', mouthBorderTop: 'none',
+        mouthBorderRadius: '0 0 20% 20%', mouthBottom: '20px',
+        faceGradient: 'linear-gradient(160deg,#d09e5e 0%,#b27650 60%,#9a6840 100%)',
+        eyeHeight: '6px', shake: null,
+        speeches: [
+            'これはいかん。少し本腰を入れて取り組みなさい。',
+            'わしが若い頃は「あとで」などという言葉は存在しなかったんじゃ。',
+            'タスクを見るたびに気が重くなる。お前もそうじゃろう？ならやりなさい。',
+        ]
+    },
+    // lv4: 20-24%  やや不満
+    {
+        browLDeg: -13, browRDeg: 13,
+        mouthBorderBottom: '1.5px solid #5a3a1a', mouthBorderTop: 'none',
+        mouthBorderRadius: '0 0 10% 10%', mouthBottom: '20px',
+        faceGradient: 'linear-gradient(160deg,#cc9858 0%,#ae6e4a 60%,#9a6840 100%)',
+        eyeHeight: '5px', shake: null,
+        speeches: [
+            'やれやれ…また増えておる。いつになったらやるんじゃ。',
+            '「あとで」が口癖になっておらんか？それは怠け者の証拠じゃぞ。',
+            'わしは一度も約束を破ったことがない。お前はどうじゃ？',
+        ]
+    },
+    // lv5: 25-29%  不満高まる
+    {
+        browLDeg: -15, browRDeg: 15,
+        mouthBorderBottom: 'none', mouthBorderTop: '2px solid #5a3a1a',
+        mouthBorderRadius: '30% 30% 0 0', mouthBottom: '22px',
+        faceGradient: 'linear-gradient(160deg,#c89050 0%,#aa6845 60%,#9a6840 100%)',
+        eyeHeight: '5px', shake: null,
+        speeches: [
+            'うぬ…これは由々しき事態じゃぞ。何をしておったんじゃ。',
+            '積み上がるタスクを見て恥ずかしくないのか！情けない！',
+            'わしはな、ここまで溜めたことは一度もないんじゃ。一度もじゃ！',
+        ]
+    },
+    // lv6: 30-34%  説教モード
+    {
+        browLDeg: -16, browRDeg: 16,
+        mouthBorderBottom: 'none', mouthBorderTop: '2.5px solid #5a3a1a',
+        mouthBorderRadius: '40% 40% 0 0', mouthBottom: '22px',
+        faceGradient: 'linear-gradient(160deg,#c48848 0%,#a66040 60%,#963c20 100%)',
+        eyeHeight: '5px', shake: null,
+        speeches: [
+            'これほど溜めるとは…全く呆れてものが言えんわ。',
+            '昭和の男はな、仕事を溜めることを恥じておった。今はどうじゃ！',
+            'タスクというのは借金と同じじゃ。利子がついて膨らむものじゃ！',
+        ]
+    },
+    // lv7: 35-39%  説教強め・顔が赤らむ
+    {
+        browLDeg: -18, browRDeg: 18,
+        mouthBorderBottom: 'none', mouthBorderTop: '2.5px solid #5a3a1a',
+        mouthBorderRadius: '50% 50% 0 0', mouthBottom: '22px',
+        faceGradient: 'linear-gradient(160deg,#c08040 0%,#a05838 60%,#8c3018 100%)',
+        eyeHeight: '4px', shake: null,
+        speeches: [
+            'ぬ、ぬぅ…！これほどとは！一体何をやっておったんじゃ！',
+            '怒りで目がくらみそうじゃ。本当に情けない。本当に。',
+            '高度経済成長期にこんなことをしておったら、会社をクビじゃ！',
+        ]
+    },
+    // lv8: 40-44%  不機嫌全開
+    {
+        browLDeg: -19, browRDeg: 19,
+        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #4a2a0a',
+        mouthBorderRadius: '50% 50% 0 0', mouthBottom: '23px',
+        faceGradient: 'linear-gradient(160deg,#bc7838 0%,#9c5030 60%,#882810 100%)',
+        eyeHeight: '4px', shake: null,
+        speeches: [
+            'これは…もはや怠惰を超えた何かじゃ。言葉もないわ！',
+            'わしの若い頃を知っておるか。朝4時起きで働いておったんじゃ！',
+            'ここまで来るともはや笑えん。笑えんぞ！！',
+        ]
+    },
+    // lv9: 45-49%  不機嫌激化
+    {
+        browLDeg: -21, browRDeg: 21,
+        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #4a2a0a',
+        mouthBorderRadius: '50% 50% 0 0', mouthBottom: '23px',
+        faceGradient: 'linear-gradient(160deg,#b87030 0%,#984828 60%,#842010 100%)',
+        eyeHeight: '4px', shake: null,
+        speeches: [
+            'ぬわっ！！これほど溜めて…お前は何者じゃ！！',
+            '堪忍袋の緒が切れそうじゃ。切れそうなんじゃ！！',
+            'この数を見るたびにわしの血圧が上がるんじゃ！わかっておるか！',
+        ]
+    },
+    // lv10: 50-54%  怒り本格化
+    {
+        browLDeg: -22, browRDeg: 22,
+        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #3a1a00',
+        mouthBorderRadius: '60% 60% 0 0', mouthBottom: '24px',
+        faceGradient: 'linear-gradient(160deg,#b46828 0%,#944020 60%,#801808 100%)',
+        eyeHeight: '3px', shake: null,
+        speeches: [
+            '喝！！もはや言葉では足りん！行動で示せ！！',
+            'わしの60年の人生をなんじゃと思っておるんじゃ！！！',
+            'こんな数字を見せられては…胃が痛い！本当に胃が痛い！',
+        ]
+    },
+    // lv11: 55-59%  怒り
+    {
+        browLDeg: -23, browRDeg: 23,
+        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #3a1a00',
+        mouthBorderRadius: '60% 60% 0 0', mouthBottom: '24px',
+        faceGradient: 'linear-gradient(160deg,#b06020 0%,#903818 60%,#7c1008 100%)',
+        eyeHeight: '3px', shake: null,
+        speeches: [
+            'もはや怒りを通り越して悲しくなってきたわ！情けない！',
+            'お前のことが心配じゃ。本当に心配じゃ。でも怒りの方が大きい！',
+            '昭和の戦士たちが泣いておるぞ！天国で泣いておるぞ！！',
+        ]
+    },
+    // lv12: 60-64%  怒り強め
+    {
+        browLDeg: -24, browRDeg: 24,
+        mouthBorderBottom: 'none', mouthBorderTop: '3.5px solid #3a1a00',
+        mouthBorderRadius: '70% 70% 0 0', mouthBottom: '24px',
+        faceGradient: 'linear-gradient(160deg,#ac5818 0%,#8c3010 60%,#780808 100%)',
+        eyeHeight: '3px', shake: null,
+        speeches: [
+            'ぬおおお！！！これほどとは！！これほどとは！！！',
+            '怒髪天を衝くとはこのことじゃ！！白髪が逆立っておるわ！！',
+            'わしの説教歴60年で初めて見る光景じゃ！！記録更新じゃ！！',
+        ]
+    },
+    // lv13: 65-69%  激怒手前
+    {
+        browLDeg: -25, browRDeg: 25,
+        mouthBorderBottom: 'none', mouthBorderTop: '3.5px solid #3a1a00',
+        mouthBorderRadius: '70% 70% 0 0', mouthBottom: '25px',
+        faceGradient: 'linear-gradient(160deg,#a85010 0%,#882808 60%,#740000 100%)',
+        eyeHeight: '2px', shake: null,
+        speeches: [
+            'こ、これは…！！もはや怠惰の芸術作品じゃ！！！',
+            'わしの心臓が持つかどうか心配じゃ！！全くお前という奴は！！',
+            '天罰が下るぞ！！本当に天罰が下るぞ！！覚悟しなさい！！！',
+        ]
+    },
+    // lv14: 70-74%  激怒
+    {
+        browLDeg: -26, browRDeg: 26,
+        mouthBorderBottom: 'none', mouthBorderTop: '4px solid #2a0a00',
+        mouthBorderRadius: '80% 80% 0 0', mouthBottom: '25px',
+        faceGradient: 'linear-gradient(160deg,#a44808 0%,#842008 60%,#700000 100%)',
+        eyeHeight: '2px', shake: 'shake1',
+        speeches: [
+            '喝ーーー！！！！！！喝！！！！！喝！！！！！！！',
+            'もはや言葉がない！！言葉がないんじゃ！！！！！！',
+            'わしの老体では限界じゃ！！これ以上は心臓に悪い！！！！',
+        ]
+    },
+    // lv15: 75-79%  激怒強め・震え始め
+    {
+        browLDeg: -27, browRDeg: 27,
+        mouthBorderBottom: 'none', mouthBorderTop: '4px solid #2a0a00',
+        mouthBorderRadius: '80% 80% 0 0', mouthBottom: '25px',
+        faceGradient: 'linear-gradient(160deg,#a04000 0%,#801800 60%,#6c0000 100%)',
+        eyeHeight: '2px', shake: 'shake1',
+        speeches: [
+            'ぬぬぬぬぬ！！！震えが止まらんわ！！！！！！',
+            'これはもはや個人の問題を超えておる！！社会問題じゃ！！！',
+            'わしが若ければ今すぐ全部片付けてやる！！！老体が恨めしい！！！',
+        ]
+    },
+    // lv16: 80-84%  憤怒・震え中
+    {
+        browLDeg: -28, browRDeg: 28,
+        mouthBorderBottom: 'none', mouthBorderTop: '4px solid #200000',
+        mouthBorderRadius: '90% 90% 0 0', mouthBottom: '26px',
+        faceGradient: 'linear-gradient(160deg,#9c3800 0%,#7c1000 60%,#680000 100%)',
+        eyeHeight: '2px', shake: 'shake2',
+        speeches: [
+            'ぬおおおおお！！！！！！！！！！！！！！！！！！！',
+            '60年の説教歴が！！！60年が！！！！報われんわ！！！！！',
+            'もはや怒りのステージを超えた！！新次元の怒りじゃ！！！！',
+        ]
+    },
+    // lv17: 85-89%  憤怒強め・震え大
+    {
+        browLDeg: -29, browRDeg: 29,
+        mouthBorderBottom: 'none', mouthBorderTop: '4.5px solid #200000',
+        mouthBorderRadius: '90% 90% 0 0', mouthBottom: '26px',
+        faceGradient: 'linear-gradient(160deg,#983000 0%,#780800 60%,#640000 100%)',
+        eyeHeight: '1px', shake: 'shake2',
+        speeches: [
+            'こ、こんなことが！！！！！！！わしの辞書に「諦め」はない！！！！！',
+            '震えが！！体の震えが！！止まらんわ！！！！！！！！！！',
+            'お前という奴は！！！！！お前という奴は！！！！！！！！！',
+        ]
+    },
+    // lv18: 90-94%  修羅・震え最大級
+    {
+        browLDeg: -30, browRDeg: 30,
+        mouthBorderBottom: 'none', mouthBorderTop: '5px solid #1a0000',
+        mouthBorderRadius: '95% 95% 0 0', mouthBottom: '27px',
+        faceGradient: 'linear-gradient(160deg,#942800 0%,#740000 60%,#600000 100%)',
+        eyeHeight: '1px', shake: 'shake3',
+        speeches: [
+            '…………（言葉を失う）…………これは……これは……！！！！！',
+            'わしの魂が！！魂が！！！！！！叫んでおるぞ！！！！！！！！！！',
+            'もはや人間の限界を超えた怠惰じゃ！！！！！！記念碑を建てよ！！！！！！',
+        ]
+    },
+    // lv19: 95-100%  完全修羅・最大震え
+    {
+        browLDeg: -32, browRDeg: 32,
+        mouthBorderBottom: 'none', mouthBorderTop: '5px solid #1a0000',
+        mouthBorderRadius: '95% 95% 0 0', mouthBottom: '27px',
+        faceGradient: 'linear-gradient(160deg,#901800 0%,#700000 60%,#5c0000 100%)',
+        eyeHeight: '1px', shake: 'shake3',
+        speeches: [
+            '…（完全に言葉を失い、ただ震えるのみ）…',
+            'こ……これは……人類の……敗北……じゃ……！！！！！！！！！！！！',
+            '喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！',
+        ]
+    },
+];
 
-        const kEl = document.getElementById('metricKogoto');
-        const kAnEl = document.getElementById('metricKannin');
+// ============================================================
+// タスク数 → 小言レベル（%）→ 段階インデックス
+// ============================================================
+const taskCount = {{ tasks|length }};
 
-        kEl.textContent = kogoto;
-        kEl.className = 'metric-value ' + (kogoto >= 70 ? 'val-danger' : kogoto >= 40 ? 'val-warn' : 'val-ok');
+// 小言レベル % を計算（1タスク = 15pt 上限100）
+const kogoto  = Math.min(taskCount * 15, 100);
+const kannin  = Math.max(100 - taskCount * 13, 0);
+const bravado = Math.min(taskCount * 12 + 20, 100);
+const rage    = Math.min(taskCount * 16, 100);
+const love    = Math.max(100 - taskCount * 8, 10);
 
-        kAnEl.textContent = kannin;
-        kAnEl.className = 'metric-value ' + (kannin <= 30 ? 'val-danger' : kannin <= 60 ? 'val-warn' : 'val-ok');
+// 5%刻みのインデックス（0〜19）
+const lvIndex = Math.min(Math.floor(kogoto / 5), 19);
+const lvData  = OJII_LEVELS[lvIndex];
 
-        setGauge('gauge1', 'gaugePct1', bravado);
-        setGauge('gauge2', 'gaugePct2', rage);
-        setGauge('gauge3', 'gaugePct3', love);
-    })();
+// ============================================================
+// ダッシュボード数値更新
+// ============================================================
+(function updateDashboard() {
+    const kEl   = document.getElementById('metricKogoto');
+    const kAnEl = document.getElementById('metricKannin');
 
-    function setGauge(fillId, pctId, val) {
-        document.getElementById(fillId).style.width = val + '%';
-        document.getElementById(pctId).textContent = val + '%';
+    kEl.textContent  = kogoto;
+    kEl.className = 'metric-value ' + (kogoto >= 70 ? 'val-danger' : kogoto >= 40 ? 'val-warn' : 'val-ok');
+
+    kAnEl.textContent = kannin;
+    kAnEl.className = 'metric-value ' + (kannin <= 30 ? 'val-danger' : kannin <= 60 ? 'val-warn' : 'val-ok');
+
+    setGauge('gauge1', 'gaugePct1', bravado);
+    setGauge('gauge2', 'gaugePct2', rage);
+    setGauge('gauge3', 'gaugePct3', love);
+})();
+
+function setGauge(fillId, pctId, val) {
+    document.getElementById(fillId).style.width = val + '%';
+    document.getElementById(pctId).textContent  = val + '%';
+}
+
+// ============================================================
+// おじいちゃん表情を段階的に適用
+// ============================================================
+(function applyOjiiLevel() {
+    const face   = document.getElementById('ojiiFace');
+    const browL  = document.getElementById('ojiiBrowL');
+    const browR  = document.getElementById('ojiiBrowR');
+    const mouth  = document.getElementById('ojiiMouth');
+    const eyeL   = document.getElementById('ojiiEyeL');
+    const eyeR   = document.getElementById('ojiiEyeR');
+    const avatar = document.getElementById('ojiiAvatar');
+
+    // 顔の色
+    face.style.background = lvData.faceGradient;
+
+    // 眉毛の角度
+    browL.style.transform = `rotate(${lvData.browLDeg}deg)`;
+    browR.style.transform = `rotate(${lvData.browRDeg}deg)`;
+
+    // レベルが高いほど眉を太く・暗く
+    const browThickness = Math.min(3 + Math.floor(lvIndex / 5), 5);
+    browL.style.height = browThickness + 'px';
+    browR.style.height = browThickness + 'px';
+    const browDark = Math.max(90 - lvIndex * 3, 20);
+    browL.style.background = `rgb(${browDark},${Math.floor(browDark*0.6)},${Math.floor(browDark*0.3)})`;
+    browR.style.background = `rgb(${browDark},${Math.floor(browDark*0.6)},${Math.floor(browDark*0.3)})`;
+
+    // 口
+    mouth.style.borderBottom      = lvData.mouthBorderBottom;
+    mouth.style.borderTop         = lvData.mouthBorderTop;
+    mouth.style.borderLeft        = 'none';
+    mouth.style.borderRight       = 'none';
+    mouth.style.borderRadius      = lvData.mouthBorderRadius;
+    mouth.style.bottom            = lvData.mouthBottom;
+
+    // 目の細さ（怒るほど細くなる）
+    eyeL.style.height = lvData.eyeHeight;
+    eyeR.style.height = lvData.eyeHeight;
+
+    // 震えアニメ
+    avatar.classList.remove('shake1', 'shake2', 'shake3');
+    if (lvData.shake) {
+        avatar.classList.add(lvData.shake);
     }
+})();
 
-    // ===== タイプライター =====
-    const speeches = [
-        'わしが若い頃は残業なんて当たり前じゃった。文句も言わずにやっておった。',
-        'タスクを後回しにするとはどういう了見じゃ。けじめというものがあるじゃろう。',
-        'ちょっと待て。これ…全部「あとでやる」か？情けない。本当に情けない。',
-        '昭和の男はな、弱音を吐かなかったんじゃ。今の若いもんは軟弱すぎる。',
-        '仕事は溜めるな、と何度言えばわかるんじゃ。まったく、しょうがない奴じゃ。',
-        '儂はな、高度経済成長期に身を粉にして働いたんじゃ。その辺の覚悟が違う。',
-        '「あとで」…「あとで」…！その「あとで」が来たためしがないじゃろうが！',
-        'まあ…お前も疲れておるんじゃろう。少し休んで、それからきちんとやりなさい。',
-    ];
+// ============================================================
+// タイプライター（ページ読み込み時にランダムセリフ）
+// ============================================================
+let currentSpeechGroup = lvData.speeches;
+let typeInterval = null;
 
-    let speechIdx = 0;
-    let typeInterval = null;
+function typeWrite(text) {
+    const el = document.getElementById('typewriterText');
+    el.textContent = '';
+    let i = 0;
+    clearInterval(typeInterval);
+    typeInterval = setInterval(() => {
+        el.textContent += text[i];
+        i++;
+        if (i >= text.length) clearInterval(typeInterval);
+    }, 55);
+}
 
-    function typeWrite(text) {
-        const el = document.getElementById('typewriterText');
-        el.textContent = '';
-        let i = 0;
-        clearInterval(typeInterval);
-        typeInterval = setInterval(() => {
-            el.textContent += text[i];
-            i++;
-            if (i >= text.length) clearInterval(typeInterval);
-        }, 60);
+// 初回：レベルに応じたセリフからランダムに選ぶ
+setTimeout(() => {
+    const idx = Math.floor(Math.random() * currentSpeechGroup.length);
+    typeWrite(currentSpeechGroup[idx]);
+}, 800);
+
+// ============================================================
+// おじいちゃんクリックリアクション
+// ============================================================
+const rageWords = [
+    { word: '喝！',    sub: '喝を入れてやろう' },
+    { word: 'ぬおっ',  sub: '怒髪天を衝く' },
+    { word: '情けない', sub: '一体何を考えておるんじゃ' },
+    { word: 'こらっ！', sub: '聞いておるか！' },
+    { word: 'やれやれ…', sub: 'まったく、しょうがない奴じゃ' },
+    { word: '喝！喝！', sub: '二度言っても足りんわ' },
+    { word: 'ぬぬぬ！', sub: '震えが止まらん' },
+    { word: '天罰じゃ！', sub: '覚悟しなさい' },
+];
+
+let rageIdx = 0;
+let speechRotateIdx = 0;
+
+function ojiiReact() {
+    const avatar  = document.getElementById('ojiiAvatar');
+    const popup   = document.getElementById('ragePopup');
+    const overlay = document.getElementById('rageOverlay');
+
+    // セリフをローテーション（現在レベルのセリフ群から順番に）
+    speechRotateIdx = (speechRotateIdx + 1) % currentSpeechGroup.length;
+    typeWrite(currentSpeechGroup[speechRotateIdx]);
+
+    // キレワード
+    const rw = rageWords[rageIdx % rageWords.length];
+    rageIdx++;
+    document.getElementById('rageWord').textContent = rw.word;
+    document.getElementById('rageSub').textContent  = rw.sub;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 1800);
+
+    // フラッシュ
+    overlay.classList.remove('flash');
+    void overlay.offsetWidth;
+    overlay.classList.add('flash');
+
+    // パーティクル
+    const rect = avatar.getBoundingClientRect();
+    spawnParticlesAt(rect.left + 44, rect.top + 44,
+        ['#c9a84c','#c0392b','#fff','#e8d5a0'], 10);
+}
+
+// ============================================================
+// 削除パーティクル
+// ============================================================
+function deleteParticle(e) {
+    e.preventDefault();
+    spawnParticlesAt(e.clientX, e.clientY,
+        ['#c0392b','#e57373','#c9a84c','#fff'], 14);
+    setTimeout(() => e.target.closest('form').submit(), 360);
+}
+
+function spawnParticlesAt(x, y, colors, count) {
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'particle';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.left = x + 'px';
+        el.style.top  = y + 'px';
+        const angle = (Math.PI * 2 / count) * i + Math.random() * 0.4;
+        const dist  = 50 + Math.random() * 90;
+        el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        el.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
     }
-
-    // 初回
-    setTimeout(() => typeWrite(speeches[0]), 800);
-
-    // ===== おじいちゃんリアクション =====
-    const rageWords = [
-        { word: '喝！', sub: '갈！ — 喝を入れてやろう' },
-        { word: 'ぬおっ', sub: '怒髪天を衝く' },
-        { word: '情けない', sub: '一体何を考えておるんじゃ' },
-        { word: 'こらっ！', sub: '聞いておるか！' },
-        { word: 'やれやれ…', sub: 'まったく、しょうがない奴じゃ' },
-        { word: '喝！喝！', sub: '二度言っても足りんわ' },
-    ];
-
-    let rageIdx = 0;
-
-    function ojiiReact() {
-        const avatar = document.getElementById('ojiiAvatar');
-        const popup = document.getElementById('ragePopup');
-        const overlay = document.getElementById('rageOverlay');
-
-        // おじいちゃん怒る
-        avatar.classList.add('angry');
-        setTimeout(() => avatar.classList.remove('angry'), 2000);
-
-        // セリフ更新
-        speechIdx = (speechIdx + 1) % speeches.length;
-        typeWrite(speeches[speechIdx]);
-
-        // キレワード
-        const rw = rageWords[rageIdx % rageWords.length];
-        rageIdx++;
-        document.getElementById('rageWord').textContent = rw.word;
-        document.getElementById('rageSub').textContent = rw.sub;
-        popup.classList.add('show');
-        setTimeout(() => popup.classList.remove('show'), 1800);
-
-        // フラッシュ
-        overlay.classList.remove('flash');
-        void overlay.offsetWidth;
-        overlay.classList.add('flash');
-
-        // パーティクル
-        spawnParticlesAt(
-            document.getElementById('ojiiAvatar').getBoundingClientRect().left + 44,
-            document.getElementById('ojiiAvatar').getBoundingClientRect().top + 44,
-            ['#c9a84c', '#c0392b', '#fff', '#e8d5a0'],
-            10
-        );
-    }
-
-    // ===== 削除パーティクル =====
-    function deleteParticle(e) {
-        e.preventDefault();
-        spawnParticlesAt(e.clientX, e.clientY, ['#c0392b', '#e57373', '#c9a84c', '#fff'], 14);
-        setTimeout(() => e.target.closest('form').submit(), 360);
-    }
-
-    function spawnParticlesAt(x, y, colors, count) {
-        for (let i = 0; i < count; i++) {
-            const el = document.createElement('div');
-            el.className = 'particle';
-            el.style.background = colors[Math.floor(Math.random() * colors.length)];
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            const angle = (Math.PI * 2 / count) * i + Math.random() * 0.4;
-            const dist = 50 + Math.random() * 90;
-            el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-            el.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1000);
-        }
-    }
-    </script>
+}
+</script>
 </body>
 </html>
