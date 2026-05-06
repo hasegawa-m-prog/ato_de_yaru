@@ -391,6 +391,24 @@
             letter-spacing: 0.05em;
         }
 
+        /* ===== AI小言バッジ ===== */
+        .ai-badge {
+            display: inline-block;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            background: var(--gold-dim);
+            border: 1px solid var(--gold-border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            margin-bottom: 8px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .ai-badge.show { opacity: 1; }
+
         .typewriter-cursor {
             display: inline-block;
             width: 2px;
@@ -730,6 +748,14 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
     </style>
+
+    <!-- ★ AI小言をDjangoテンプレートからJavaScriptに渡す ★ -->
+    {% if request.session.ai_kogoto %}
+    <script>
+        window.AI_KOGOTO = {{ request.session.ai_kogoto|escapejs|safe }};
+        window.AI_KOGOTO_TASK = {{ request.session.ai_kogoto_task|escapejs|safe }};
+    </script>
+    {% endif %}
 </head>
 <body>
 
@@ -800,6 +826,8 @@
             <div class="ojii-info">
                 <div class="ojii-name">田中 義雄 翁</div>
                 <div class="ojii-title">元・高度経済成長期の戦士 / 説教歴 60年</div>
+                <!-- ★ AI生成バッジ（AI小言のときだけ表示） ★ -->
+                <div class="ai-badge" id="aiBadge">✦ AI 生成の小言</div>
                 <div class="ojii-speech" id="ojiiSpeech">
                     <span id="typewriterText"></span><span class="typewriter-cursor"></span>
                 </div>
@@ -1005,266 +1033,26 @@
 // 小言レベル5%刻み20段階データ
 // ============================================================
 const OJII_LEVELS = [
-    // lv0: 0-4%  穏やか・機嫌よし
-    {
-        browLDeg: -8,  browRDeg: 8,
-        mouthBorderBottom: '2.5px solid #5a3a1a', mouthBorderTop: 'none',
-        mouthBorderRadius: '0 0 50% 50%', mouthBottom: '20px',
-        faceGradient: 'linear-gradient(160deg,#d4a96a 0%,#b8845a 60%,#9a6840 100%)',
-        eyeHeight: '7px', shake: null,
-        speeches: [
-            'まあ…今日はそれほど溜まっておらんな。感心感心。',
-            'うむ、よくやっておる。この調子で頼むぞ。',
-            'わしも若い頃はきちんと片付けておったものじゃ。お前もその心がけは良い。',
-        ]
-    },
-    // lv1: 5-9%  少し気になり始める
-    {
-        browLDeg: -9,  browRDeg: 9,
-        mouthBorderBottom: '2.5px solid #5a3a1a', mouthBorderTop: 'none',
-        mouthBorderRadius: '0 0 50% 50%', mouthBottom: '20px',
-        faceGradient: 'linear-gradient(160deg,#d4a96a 0%,#b8845a 60%,#9a6840 100%)',
-        eyeHeight: '7px', shake: null,
-        speeches: [
-            'ちょっと溜まり始めておるぞ。早めに手を打ちなさい。',
-            'ふむ…少々気になるが、まだ許容範囲じゃな。',
-            'わしが若い頃はこれくらいは朝飯前じゃったが…お前はどうじゃ？',
-        ]
-    },
-    // lv2: 10-14%  軽い小言
-    {
-        browLDeg: -10, browRDeg: 10,
-        mouthBorderBottom: '2px solid #5a3a1a', mouthBorderTop: 'none',
-        mouthBorderRadius: '0 0 30% 30%', mouthBottom: '20px',
-        faceGradient: 'linear-gradient(160deg,#d2a465 0%,#b57d54 60%,#9a6840 100%)',
-        eyeHeight: '6px', shake: null,
-        speeches: [
-            'うーむ、少し増えてきたな。後回しは良くないぞ。',
-            'タスクというのはな、雪だるまのように増えるものじゃ。今のうちじゃ。',
-            'わしはな、積み残しが嫌いなんじゃ。見ておって落ち着かん。',
-        ]
-    },
-    // lv3: 15-19%  小言モード開始
-    {
-        browLDeg: -12, browRDeg: 12,
-        mouthBorderBottom: '2px solid #5a3a1a', mouthBorderTop: 'none',
-        mouthBorderRadius: '0 0 20% 20%', mouthBottom: '20px',
-        faceGradient: 'linear-gradient(160deg,#d09e5e 0%,#b27650 60%,#9a6840 100%)',
-        eyeHeight: '6px', shake: null,
-        speeches: [
-            'これはいかん。少し本腰を入れて取り組みなさい。',
-            'わしが若い頃は「あとで」などという言葉は存在しなかったんじゃ。',
-            'タスクを見るたびに気が重くなる。お前もそうじゃろう？ならやりなさい。',
-        ]
-    },
-    // lv4: 20-24%  やや不満
-    {
-        browLDeg: -13, browRDeg: 13,
-        mouthBorderBottom: '1.5px solid #5a3a1a', mouthBorderTop: 'none',
-        mouthBorderRadius: '0 0 10% 10%', mouthBottom: '20px',
-        faceGradient: 'linear-gradient(160deg,#cc9858 0%,#ae6e4a 60%,#9a6840 100%)',
-        eyeHeight: '5px', shake: null,
-        speeches: [
-            'やれやれ…また増えておる。いつになったらやるんじゃ。',
-            '「あとで」が口癖になっておらんか？それは怠け者の証拠じゃぞ。',
-            'わしは一度も約束を破ったことがない。お前はどうじゃ？',
-        ]
-    },
-    // lv5: 25-29%  不満高まる
-    {
-        browLDeg: -15, browRDeg: 15,
-        mouthBorderBottom: 'none', mouthBorderTop: '2px solid #5a3a1a',
-        mouthBorderRadius: '30% 30% 0 0', mouthBottom: '22px',
-        faceGradient: 'linear-gradient(160deg,#c89050 0%,#aa6845 60%,#9a6840 100%)',
-        eyeHeight: '5px', shake: null,
-        speeches: [
-            'うぬ…これは由々しき事態じゃぞ。何をしておったんじゃ。',
-            '積み上がるタスクを見て恥ずかしくないのか！情けない！',
-            'わしはな、ここまで溜めたことは一度もないんじゃ。一度もじゃ！',
-        ]
-    },
-    // lv6: 30-34%  説教モード
-    {
-        browLDeg: -16, browRDeg: 16,
-        mouthBorderBottom: 'none', mouthBorderTop: '2.5px solid #5a3a1a',
-        mouthBorderRadius: '40% 40% 0 0', mouthBottom: '22px',
-        faceGradient: 'linear-gradient(160deg,#c48848 0%,#a66040 60%,#963c20 100%)',
-        eyeHeight: '5px', shake: null,
-        speeches: [
-            'これほど溜めるとは…全く呆れてものが言えんわ。',
-            '昭和の男はな、仕事を溜めることを恥じておった。今はどうじゃ！',
-            'タスクというのは借金と同じじゃ。利子がついて膨らむものじゃ！',
-        ]
-    },
-    // lv7: 35-39%  説教強め・顔が赤らむ
-    {
-        browLDeg: -18, browRDeg: 18,
-        mouthBorderBottom: 'none', mouthBorderTop: '2.5px solid #5a3a1a',
-        mouthBorderRadius: '50% 50% 0 0', mouthBottom: '22px',
-        faceGradient: 'linear-gradient(160deg,#c08040 0%,#a05838 60%,#8c3018 100%)',
-        eyeHeight: '4px', shake: null,
-        speeches: [
-            'ぬ、ぬぅ…！これほどとは！一体何をやっておったんじゃ！',
-            '怒りで目がくらみそうじゃ。本当に情けない。本当に。',
-            '高度経済成長期にこんなことをしておったら、会社をクビじゃ！',
-        ]
-    },
-    // lv8: 40-44%  不機嫌全開
-    {
-        browLDeg: -19, browRDeg: 19,
-        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #4a2a0a',
-        mouthBorderRadius: '50% 50% 0 0', mouthBottom: '23px',
-        faceGradient: 'linear-gradient(160deg,#bc7838 0%,#9c5030 60%,#882810 100%)',
-        eyeHeight: '4px', shake: null,
-        speeches: [
-            'これは…もはや怠惰を超えた何かじゃ。言葉もないわ！',
-            'わしの若い頃を知っておるか。朝4時起きで働いておったんじゃ！',
-            'ここまで来るともはや笑えん。笑えんぞ！！',
-        ]
-    },
-    // lv9: 45-49%  不機嫌激化
-    {
-        browLDeg: -21, browRDeg: 21,
-        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #4a2a0a',
-        mouthBorderRadius: '50% 50% 0 0', mouthBottom: '23px',
-        faceGradient: 'linear-gradient(160deg,#b87030 0%,#984828 60%,#842010 100%)',
-        eyeHeight: '4px', shake: null,
-        speeches: [
-            'ぬわっ！！これほど溜めて…お前は何者じゃ！！',
-            '堪忍袋の緒が切れそうじゃ。切れそうなんじゃ！！',
-            'この数を見るたびにわしの血圧が上がるんじゃ！わかっておるか！',
-        ]
-    },
-    // lv10: 50-54%  怒り本格化
-    {
-        browLDeg: -22, browRDeg: 22,
-        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #3a1a00',
-        mouthBorderRadius: '60% 60% 0 0', mouthBottom: '24px',
-        faceGradient: 'linear-gradient(160deg,#b46828 0%,#944020 60%,#801808 100%)',
-        eyeHeight: '3px', shake: null,
-        speeches: [
-            '喝！！もはや言葉では足りん！行動で示せ！！',
-            'わしの60年の人生をなんじゃと思っておるんじゃ！！！',
-            'こんな数字を見せられては…胃が痛い！本当に胃が痛い！',
-        ]
-    },
-    // lv11: 55-59%  怒り
-    {
-        browLDeg: -23, browRDeg: 23,
-        mouthBorderBottom: 'none', mouthBorderTop: '3px solid #3a1a00',
-        mouthBorderRadius: '60% 60% 0 0', mouthBottom: '24px',
-        faceGradient: 'linear-gradient(160deg,#b06020 0%,#903818 60%,#7c1008 100%)',
-        eyeHeight: '3px', shake: null,
-        speeches: [
-            'もはや怒りを通り越して悲しくなってきたわ！情けない！',
-            'お前のことが心配じゃ。本当に心配じゃ。でも怒りの方が大きい！',
-            '昭和の戦士たちが泣いておるぞ！天国で泣いておるぞ！！',
-        ]
-    },
-    // lv12: 60-64%  怒り強め
-    {
-        browLDeg: -24, browRDeg: 24,
-        mouthBorderBottom: 'none', mouthBorderTop: '3.5px solid #3a1a00',
-        mouthBorderRadius: '70% 70% 0 0', mouthBottom: '24px',
-        faceGradient: 'linear-gradient(160deg,#ac5818 0%,#8c3010 60%,#780808 100%)',
-        eyeHeight: '3px', shake: null,
-        speeches: [
-            'ぬおおお！！！これほどとは！！これほどとは！！！',
-            '怒髪天を衝くとはこのことじゃ！！白髪が逆立っておるわ！！',
-            'わしの説教歴60年で初めて見る光景じゃ！！記録更新じゃ！！',
-        ]
-    },
-    // lv13: 65-69%  激怒手前
-    {
-        browLDeg: -25, browRDeg: 25,
-        mouthBorderBottom: 'none', mouthBorderTop: '3.5px solid #3a1a00',
-        mouthBorderRadius: '70% 70% 0 0', mouthBottom: '25px',
-        faceGradient: 'linear-gradient(160deg,#a85010 0%,#882808 60%,#740000 100%)',
-        eyeHeight: '2px', shake: null,
-        speeches: [
-            'こ、これは…！！もはや怠惰の芸術作品じゃ！！！',
-            'わしの心臓が持つかどうか心配じゃ！！全くお前という奴は！！',
-            '天罰が下るぞ！！本当に天罰が下るぞ！！覚悟しなさい！！！',
-        ]
-    },
-    // lv14: 70-74%  激怒
-    {
-        browLDeg: -26, browRDeg: 26,
-        mouthBorderBottom: 'none', mouthBorderTop: '4px solid #2a0a00',
-        mouthBorderRadius: '80% 80% 0 0', mouthBottom: '25px',
-        faceGradient: 'linear-gradient(160deg,#a44808 0%,#842008 60%,#700000 100%)',
-        eyeHeight: '2px', shake: 'shake1',
-        speeches: [
-            '喝ーーー！！！！！！喝！！！！！喝！！！！！！！',
-            'もはや言葉がない！！言葉がないんじゃ！！！！！！',
-            'わしの老体では限界じゃ！！これ以上は心臓に悪い！！！！',
-        ]
-    },
-    // lv15: 75-79%  激怒強め・震え始め
-    {
-        browLDeg: -27, browRDeg: 27,
-        mouthBorderBottom: 'none', mouthBorderTop: '4px solid #2a0a00',
-        mouthBorderRadius: '80% 80% 0 0', mouthBottom: '25px',
-        faceGradient: 'linear-gradient(160deg,#a04000 0%,#801800 60%,#6c0000 100%)',
-        eyeHeight: '2px', shake: 'shake1',
-        speeches: [
-            'ぬぬぬぬぬ！！！震えが止まらんわ！！！！！！',
-            'これはもはや個人の問題を超えておる！！社会問題じゃ！！！',
-            'わしが若ければ今すぐ全部片付けてやる！！！老体が恨めしい！！！',
-        ]
-    },
-    // lv16: 80-84%  憤怒・震え中
-    {
-        browLDeg: -28, browRDeg: 28,
-        mouthBorderBottom: 'none', mouthBorderTop: '4px solid #200000',
-        mouthBorderRadius: '90% 90% 0 0', mouthBottom: '26px',
-        faceGradient: 'linear-gradient(160deg,#9c3800 0%,#7c1000 60%,#680000 100%)',
-        eyeHeight: '2px', shake: 'shake2',
-        speeches: [
-            'ぬおおおおお！！！！！！！！！！！！！！！！！！！',
-            '60年の説教歴が！！！60年が！！！！報われんわ！！！！！',
-            'もはや怒りのステージを超えた！！新次元の怒りじゃ！！！！',
-        ]
-    },
-    // lv17: 85-89%  憤怒強め・震え大
-    {
-        browLDeg: -29, browRDeg: 29,
-        mouthBorderBottom: 'none', mouthBorderTop: '4.5px solid #200000',
-        mouthBorderRadius: '90% 90% 0 0', mouthBottom: '26px',
-        faceGradient: 'linear-gradient(160deg,#983000 0%,#780800 60%,#640000 100%)',
-        eyeHeight: '1px', shake: 'shake2',
-        speeches: [
-            'こ、こんなことが！！！！！！！わしの辞書に「諦め」はない！！！！！',
-            '震えが！！体の震えが！！止まらんわ！！！！！！！！！！',
-            'お前という奴は！！！！！お前という奴は！！！！！！！！！',
-        ]
-    },
-    // lv18: 90-94%  修羅・震え最大級
-    {
-        browLDeg: -30, browRDeg: 30,
-        mouthBorderBottom: 'none', mouthBorderTop: '5px solid #1a0000',
-        mouthBorderRadius: '95% 95% 0 0', mouthBottom: '27px',
-        faceGradient: 'linear-gradient(160deg,#942800 0%,#740000 60%,#600000 100%)',
-        eyeHeight: '1px', shake: 'shake3',
-        speeches: [
-            '…………（言葉を失う）…………これは……これは……！！！！！',
-            'わしの魂が！！魂が！！！！！！叫んでおるぞ！！！！！！！！！！',
-            'もはや人間の限界を超えた怠惰じゃ！！！！！！記念碑を建てよ！！！！！！',
-        ]
-    },
-    // lv19: 95-100%  完全修羅・最大震え
-    {
-        browLDeg: -32, browRDeg: 32,
-        mouthBorderBottom: 'none', mouthBorderTop: '5px solid #1a0000',
-        mouthBorderRadius: '95% 95% 0 0', mouthBottom: '27px',
-        faceGradient: 'linear-gradient(160deg,#901800 0%,#700000 60%,#5c0000 100%)',
-        eyeHeight: '1px', shake: 'shake3',
-        speeches: [
-            '…（完全に言葉を失い、ただ震えるのみ）…',
-            'こ……これは……人類の……敗北……じゃ……！！！！！！！！！！！！',
-            '喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！',
-        ]
-    },
+    { browLDeg: -8,  browRDeg: 8,  mouthBorderBottom: '2.5px solid #5a3a1a', mouthBorderTop: 'none', mouthBorderRadius: '0 0 50% 50%', mouthBottom: '20px', faceGradient: 'linear-gradient(160deg,#d4a96a 0%,#b8845a 60%,#9a6840 100%)', eyeHeight: '7px', shake: null, speeches: ['まあ…今日はそれほど溜まっておらんな。感心感心。','うむ、よくやっておる。この調子で頼むぞ。','わしも若い頃はきちんと片付けておったものじゃ。お前もその心がけは良い。'] },
+    { browLDeg: -9,  browRDeg: 9,  mouthBorderBottom: '2.5px solid #5a3a1a', mouthBorderTop: 'none', mouthBorderRadius: '0 0 50% 50%', mouthBottom: '20px', faceGradient: 'linear-gradient(160deg,#d4a96a 0%,#b8845a 60%,#9a6840 100%)', eyeHeight: '7px', shake: null, speeches: ['ちょっと溜まり始めておるぞ。早めに手を打ちなさい。','ふむ…少々気になるが、まだ許容範囲じゃな。','わしが若い頃はこれくらいは朝飯前じゃったが…お前はどうじゃ？'] },
+    { browLDeg: -10, browRDeg: 10, mouthBorderBottom: '2px solid #5a3a1a', mouthBorderTop: 'none', mouthBorderRadius: '0 0 30% 30%', mouthBottom: '20px', faceGradient: 'linear-gradient(160deg,#d2a465 0%,#b57d54 60%,#9a6840 100%)', eyeHeight: '6px', shake: null, speeches: ['うーむ、少し増えてきたな。後回しは良くないぞ。','タスクというのはな、雪だるまのように増えるものじゃ。今のうちじゃ。','わしはな、積み残しが嫌いなんじゃ。見ておって落ち着かん。'] },
+    { browLDeg: -12, browRDeg: 12, mouthBorderBottom: '2px solid #5a3a1a', mouthBorderTop: 'none', mouthBorderRadius: '0 0 20% 20%', mouthBottom: '20px', faceGradient: 'linear-gradient(160deg,#d09e5e 0%,#b27650 60%,#9a6840 100%)', eyeHeight: '6px', shake: null, speeches: ['これはいかん。少し本腰を入れて取り組みなさい。','わしが若い頃は「あとで」などという言葉は存在しなかったんじゃ。','タスクを見るたびに気が重くなる。お前もそうじゃろう？ならやりなさい。'] },
+    { browLDeg: -13, browRDeg: 13, mouthBorderBottom: '1.5px solid #5a3a1a', mouthBorderTop: 'none', mouthBorderRadius: '0 0 10% 10%', mouthBottom: '20px', faceGradient: 'linear-gradient(160deg,#cc9858 0%,#ae6e4a 60%,#9a6840 100%)', eyeHeight: '5px', shake: null, speeches: ['やれやれ…また増えておる。いつになったらやるんじゃ。','「あとで」が口癖になっておらんか？それは怠け者の証拠じゃぞ。','わしは一度も約束を破ったことがない。お前はどうじゃ？'] },
+    { browLDeg: -15, browRDeg: 15, mouthBorderBottom: 'none', mouthBorderTop: '2px solid #5a3a1a', mouthBorderRadius: '30% 30% 0 0', mouthBottom: '22px', faceGradient: 'linear-gradient(160deg,#c89050 0%,#aa6845 60%,#9a6840 100%)', eyeHeight: '5px', shake: null, speeches: ['うぬ…これは由々しき事態じゃぞ。何をしておったんじゃ。','積み上がるタスクを見て恥ずかしくないのか！情けない！','わしはな、ここまで溜めたことは一度もないんじゃ。一度もじゃ！'] },
+    { browLDeg: -16, browRDeg: 16, mouthBorderBottom: 'none', mouthBorderTop: '2.5px solid #5a3a1a', mouthBorderRadius: '40% 40% 0 0', mouthBottom: '22px', faceGradient: 'linear-gradient(160deg,#c48848 0%,#a66040 60%,#963c20 100%)', eyeHeight: '5px', shake: null, speeches: ['これほど溜めるとは…全く呆れてものが言えんわ。','昭和の男はな、仕事を溜めることを恥じておった。今はどうじゃ！','タスクというのは借金と同じじゃ。利子がついて膨らむものじゃ！'] },
+    { browLDeg: -18, browRDeg: 18, mouthBorderBottom: 'none', mouthBorderTop: '2.5px solid #5a3a1a', mouthBorderRadius: '50% 50% 0 0', mouthBottom: '22px', faceGradient: 'linear-gradient(160deg,#c08040 0%,#a05838 60%,#8c3018 100%)', eyeHeight: '4px', shake: null, speeches: ['ぬ、ぬぅ…！これほどとは！一体何をやっておったんじゃ！','怒りで目がくらみそうじゃ。本当に情けない。本当に。','高度経済成長期にこんなことをしておったら、会社をクビじゃ！'] },
+    { browLDeg: -19, browRDeg: 19, mouthBorderBottom: 'none', mouthBorderTop: '3px solid #4a2a0a', mouthBorderRadius: '50% 50% 0 0', mouthBottom: '23px', faceGradient: 'linear-gradient(160deg,#bc7838 0%,#9c5030 60%,#882810 100%)', eyeHeight: '4px', shake: null, speeches: ['これは…もはや怠惰を超えた何かじゃ。言葉もないわ！','わしの若い頃を知っておるか。朝4時起きで働いておったんじゃ！','ここまで来るともはや笑えん。笑えんぞ！！'] },
+    { browLDeg: -21, browRDeg: 21, mouthBorderBottom: 'none', mouthBorderTop: '3px solid #4a2a0a', mouthBorderRadius: '50% 50% 0 0', mouthBottom: '23px', faceGradient: 'linear-gradient(160deg,#b87030 0%,#984828 60%,#842010 100%)', eyeHeight: '4px', shake: null, speeches: ['ぬわっ！！これほど溜めて…お前は何者じゃ！！','堪忍袋の緒が切れそうじゃ。切れそうなんじゃ！！','この数を見るたびにわしの血圧が上がるんじゃ！わかっておるか！'] },
+    { browLDeg: -22, browRDeg: 22, mouthBorderBottom: 'none', mouthBorderTop: '3px solid #3a1a00', mouthBorderRadius: '60% 60% 0 0', mouthBottom: '24px', faceGradient: 'linear-gradient(160deg,#b46828 0%,#944020 60%,#801808 100%)', eyeHeight: '3px', shake: null, speeches: ['喝！！もはや言葉では足りん！行動で示せ！！','わしの60年の人生をなんじゃと思っておるんじゃ！！！','こんな数字を見せられては…胃が痛い！本当に胃が痛い！'] },
+    { browLDeg: -23, browRDeg: 23, mouthBorderBottom: 'none', mouthBorderTop: '3px solid #3a1a00', mouthBorderRadius: '60% 60% 0 0', mouthBottom: '24px', faceGradient: 'linear-gradient(160deg,#b06020 0%,#903818 60%,#7c1008 100%)', eyeHeight: '3px', shake: null, speeches: ['もはや怒りを通り越して悲しくなってきたわ！情けない！','お前のことが心配じゃ。本当に心配じゃ。でも怒りの方が大きい！','昭和の戦士たちが泣いておるぞ！天国で泣いておるぞ！！'] },
+    { browLDeg: -24, browRDeg: 24, mouthBorderBottom: 'none', mouthBorderTop: '3.5px solid #3a1a00', mouthBorderRadius: '70% 70% 0 0', mouthBottom: '24px', faceGradient: 'linear-gradient(160deg,#ac5818 0%,#8c3010 60%,#780808 100%)', eyeHeight: '3px', shake: null, speeches: ['ぬおおお！！！これほどとは！！これほどとは！！！','怒髪天を衝くとはこのことじゃ！！白髪が逆立っておるわ！！','わしの説教歴60年で初めて見る光景じゃ！！記録更新じゃ！！'] },
+    { browLDeg: -25, browRDeg: 25, mouthBorderBottom: 'none', mouthBorderTop: '3.5px solid #3a1a00', mouthBorderRadius: '70% 70% 0 0', mouthBottom: '25px', faceGradient: 'linear-gradient(160deg,#a85010 0%,#882808 60%,#740000 100%)', eyeHeight: '2px', shake: null, speeches: ['こ、これは…！！もはや怠惰の芸術作品じゃ！！！','わしの心臓が持つかどうか心配じゃ！！全くお前という奴は！！','天罰が下るぞ！！本当に天罰が下るぞ！！覚悟しなさい！！！'] },
+    { browLDeg: -26, browRDeg: 26, mouthBorderBottom: 'none', mouthBorderTop: '4px solid #2a0a00', mouthBorderRadius: '80% 80% 0 0', mouthBottom: '25px', faceGradient: 'linear-gradient(160deg,#a44808 0%,#842008 60%,#700000 100%)', eyeHeight: '2px', shake: 'shake1', speeches: ['喝ーーー！！！！！！喝！！！！！喝！！！！！！！','もはや言葉がない！！言葉がないんじゃ！！！！！！','わしの老体では限界じゃ！！これ以上は心臓に悪い！！！！'] },
+    { browLDeg: -27, browRDeg: 27, mouthBorderBottom: 'none', mouthBorderTop: '4px solid #2a0a00', mouthBorderRadius: '80% 80% 0 0', mouthBottom: '25px', faceGradient: 'linear-gradient(160deg,#a04000 0%,#801800 60%,#6c0000 100%)', eyeHeight: '2px', shake: 'shake1', speeches: ['ぬぬぬぬぬ！！！震えが止まらんわ！！！！！！','これはもはや個人の問題を超えておる！！社会問題じゃ！！！','わしが若ければ今すぐ全部片付けてやる！！！老体が恨めしい！！！'] },
+    { browLDeg: -28, browRDeg: 28, mouthBorderBottom: 'none', mouthBorderTop: '4px solid #200000', mouthBorderRadius: '90% 90% 0 0', mouthBottom: '26px', faceGradient: 'linear-gradient(160deg,#9c3800 0%,#7c1000 60%,#680000 100%)', eyeHeight: '2px', shake: 'shake2', speeches: ['ぬおおおおお！！！！！！！！！！！！！！！！！！！','60年の説教歴が！！！60年が！！！！報われんわ！！！！！','もはや怒りのステージを超えた！！新次元の怒りじゃ！！！！'] },
+    { browLDeg: -29, browRDeg: 29, mouthBorderBottom: 'none', mouthBorderTop: '4.5px solid #200000', mouthBorderRadius: '90% 90% 0 0', mouthBottom: '26px', faceGradient: 'linear-gradient(160deg,#983000 0%,#780800 60%,#640000 100%)', eyeHeight: '1px', shake: 'shake2', speeches: ['こ、こんなことが！！！！！！！わしの辞書に「諦め」はない！！！！！','震えが！！体の震えが！！止まらんわ！！！！！！！！！！','お前という奴は！！！！！お前という奴は！！！！！！！！！'] },
+    { browLDeg: -30, browRDeg: 30, mouthBorderBottom: 'none', mouthBorderTop: '5px solid #1a0000', mouthBorderRadius: '95% 95% 0 0', mouthBottom: '27px', faceGradient: 'linear-gradient(160deg,#942800 0%,#740000 60%,#600000 100%)', eyeHeight: '1px', shake: 'shake3', speeches: ['…………（言葉を失う）…………これは……これは……！！！！！','わしの魂が！！魂が！！！！！！叫んでおるぞ！！！！！！！！！！','もはや人間の限界を超えた怠惰じゃ！！！！！！記念碑を建てよ！！！！！！'] },
+    { browLDeg: -32, browRDeg: 32, mouthBorderBottom: 'none', mouthBorderTop: '5px solid #1a0000', mouthBorderRadius: '95% 95% 0 0', mouthBottom: '27px', faceGradient: 'linear-gradient(160deg,#901800 0%,#700000 60%,#5c0000 100%)', eyeHeight: '1px', shake: 'shake3', speeches: ['…（完全に言葉を失い、ただ震えるのみ）…','こ……これは……人類の……敗北……じゃ……！！！！！！！！！！！！','喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！喝！！'] },
 ];
 
 // ============================================================
@@ -1272,14 +1060,12 @@ const OJII_LEVELS = [
 // ============================================================
 const taskCount = {{ tasks|length }};
 
-// 小言レベル % を計算（1タスク = 15pt 上限100）
 const kogoto  = Math.min(taskCount * 15, 100);
 const kannin  = Math.max(100 - taskCount * 13, 0);
 const bravado = Math.min(taskCount * 12 + 20, 100);
 const rage    = Math.min(taskCount * 16, 100);
 const love    = Math.max(100 - taskCount * 8, 10);
 
-// 5%刻みのインデックス（0〜19）
 const lvIndex = Math.min(Math.floor(kogoto / 5), 19);
 const lvData  = OJII_LEVELS[lvIndex];
 
@@ -1318,14 +1104,10 @@ function setGauge(fillId, pctId, val) {
     const eyeR   = document.getElementById('ojiiEyeR');
     const avatar = document.getElementById('ojiiAvatar');
 
-    // 顔の色
     face.style.background = lvData.faceGradient;
-
-    // 眉毛の角度
     browL.style.transform = `rotate(${lvData.browLDeg}deg)`;
     browR.style.transform = `rotate(${lvData.browRDeg}deg)`;
 
-    // レベルが高いほど眉を太く・暗く
     const browThickness = Math.min(3 + Math.floor(lvIndex / 5), 5);
     browL.style.height = browThickness + 'px';
     browR.style.height = browThickness + 'px';
@@ -1333,7 +1115,6 @@ function setGauge(fillId, pctId, val) {
     browL.style.background = `rgb(${browDark},${Math.floor(browDark*0.6)},${Math.floor(browDark*0.3)})`;
     browR.style.background = `rgb(${browDark},${Math.floor(browDark*0.6)},${Math.floor(browDark*0.3)})`;
 
-    // 口
     mouth.style.borderBottom      = lvData.mouthBorderBottom;
     mouth.style.borderTop         = lvData.mouthBorderTop;
     mouth.style.borderLeft        = 'none';
@@ -1341,11 +1122,9 @@ function setGauge(fillId, pctId, val) {
     mouth.style.borderRadius      = lvData.mouthBorderRadius;
     mouth.style.bottom            = lvData.mouthBottom;
 
-    // 目の細さ（怒るほど細くなる）
     eyeL.style.height = lvData.eyeHeight;
     eyeR.style.height = lvData.eyeHeight;
 
-    // 震えアニメ
     avatar.classList.remove('shake1', 'shake2', 'shake3');
     if (lvData.shake) {
         avatar.classList.add(lvData.shake);
@@ -1353,7 +1132,7 @@ function setGauge(fillId, pctId, val) {
 })();
 
 // ============================================================
-// タイプライター（ページ読み込み時にランダムセリフ）
+// タイプライター
 // ============================================================
 let currentSpeechGroup = lvData.speeches;
 let typeInterval = null;
@@ -1370,10 +1149,18 @@ function typeWrite(text) {
     }, 55);
 }
 
-// 初回：レベルに応じたセリフからランダムに選ぶ
+// ★ 初回表示：AI小言があれば優先、なければランダムセリフ ★
 setTimeout(() => {
-    const idx = Math.floor(Math.random() * currentSpeechGroup.length);
-    typeWrite(currentSpeechGroup[idx]);
+    if (window.AI_KOGOTO) {
+        // AI生成バッジを表示
+        document.getElementById('aiBadge').classList.add('show');
+        typeWrite(window.AI_KOGOTO);
+        // セッションを使い捨てにする（次回リロードでは出ない）
+        window.AI_KOGOTO = null;
+    } else {
+        const idx = Math.floor(Math.random() * currentSpeechGroup.length);
+        typeWrite(currentSpeechGroup[idx]);
+    }
 }, 800);
 
 // ============================================================
@@ -1398,11 +1185,11 @@ function ojiiReact() {
     const popup   = document.getElementById('ragePopup');
     const overlay = document.getElementById('rageOverlay');
 
-    // セリフをローテーション（現在レベルのセリフ群から順番に）
+    // クリック時はAIバッジを消してローテーションセリフへ
+    document.getElementById('aiBadge').classList.remove('show');
     speechRotateIdx = (speechRotateIdx + 1) % currentSpeechGroup.length;
     typeWrite(currentSpeechGroup[speechRotateIdx]);
 
-    // キレワード
     const rw = rageWords[rageIdx % rageWords.length];
     rageIdx++;
     document.getElementById('rageWord').textContent = rw.word;
@@ -1410,12 +1197,10 @@ function ojiiReact() {
     popup.classList.add('show');
     setTimeout(() => popup.classList.remove('show'), 1800);
 
-    // フラッシュ
     overlay.classList.remove('flash');
     void overlay.offsetWidth;
     overlay.classList.add('flash');
 
-    // パーティクル
     const rect = avatar.getBoundingClientRect();
     spawnParticlesAt(rect.left + 44, rect.top + 44,
         ['#c9a84c','#c0392b','#fff','#e8d5a0'], 10);
