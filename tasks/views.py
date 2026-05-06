@@ -20,7 +20,8 @@ def generate_kogoto(task_title):
             }]
         )
         return message.content[0].text
-    except Exception:
+    except Exception as e:
+        print(f"AI小言エラー: {e}")
         return None
 
 def task_list(request):
@@ -33,7 +34,9 @@ def task_create(request):
         if title:
             task = Task.objects.create(title=title)
             # AI小言を生成してsessionに保存
+            print(f"AI小言生成開始: {title}")
             kogoto = generate_kogoto(title)
+            print(f"AI小言生成結果: {kogoto}")
             if kogoto:
                 request.session['ai_kogoto'] = kogoto
                 request.session['ai_kogoto_task'] = title
