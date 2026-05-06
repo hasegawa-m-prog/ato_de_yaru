@@ -749,11 +749,11 @@
         ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
     </style>
 
-    <!-- ★ AI小言をDjangoテンプレートからJavaScriptに渡す ★ -->
+<!-- ★ AI小言をDjangoテンプレートからJavaScriptに渡す ★ -->
     {% if request.session.ai_kogoto %}
     <script>
-        window.AI_KOGOTO = {{ request.session.ai_kogoto|escapejs|safe }};
-        window.AI_KOGOTO_TASK = {{ request.session.ai_kogoto_task|escapejs|safe }};
+        window.AI_KOGOTO = "{{ request.session.ai_kogoto|escapejs }}";
+        window.AI_KOGOTO_TASK = "{{ request.session.ai_kogoto_task|escapejs }}";
     </script>
     {% endif %}
 </head>
