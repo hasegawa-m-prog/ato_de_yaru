@@ -26,7 +26,15 @@ def generate_kogoto(task_title):
 
 def task_list(request):
     tasks = Task.objects.all().order_by('-created_at')
-    return render(request, 'tasks/task_list.html', {'tasks': tasks})
+    # sessionからAI小言を取り出してクリア
+    ai_kogoto = request.session.pop('ai_kogoto', None)
+    ai_kogoto_task = request.session.pop('ai_kogoto_task', None)
+    return render(request, 'tasks/task_list.html', {
+        'tasks': tasks,
+        'ai_kogoto': ai_kogoto,
+        'ai_kogoto_task': ai_kogoto_task,
+    })
+
 
 def task_create(request):
     if request.method == 'POST':
