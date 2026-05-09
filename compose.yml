@@ -28,6 +28,7 @@ services:
       - .:/app
     environment:
       TZ: Asia/Tokyo
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     ports:
       - "8000:8000"
     depends_on:

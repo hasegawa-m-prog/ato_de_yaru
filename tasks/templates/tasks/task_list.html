@@ -148,6 +148,7 @@
         .site-header {
             text-align: center;
             margin-bottom: 64px;
+            position: relative;
         }
 
         .header-kamon {
@@ -201,6 +202,55 @@
             letter-spacing: 0.1em;
             font-weight: 300;
             font-family: 'Inter', sans-serif;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .user-name {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .summary-link,
+        .logout-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+
+        .summary-link:hover,
+        .logout-link:hover {
+            color: var(--gold);
+            border-color: var(--gold-border);
+            background: rgba(201,168,76,0.08);
+        }
+
+        .logout-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-link:hover {
+            color: var(--gold);
+            border-color: var(--gold-border);
+            background: rgba(201,168,76,0.08);
         }
 
         .glass-card {
@@ -781,6 +831,14 @@
 
     <!-- ヘッダー -->
     <header class="site-header">
+        <div class="user-info">
+            <span class="user-name">{{ request.user.username }}</span>
+            <a href="{% url 'user_summary' %}" class="summary-link">ユーザー集計</a>
+            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-link">ログアウト</button>
+            </form>
+        </div>
         <div class="header-kamon">
             <svg class="kamon-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="28" cy="28" r="26" stroke="rgba(201,168,76,0.5)" stroke-width="0.8"/>
@@ -871,7 +929,7 @@
                 <span class="gauge-pct" id="gaugePct2">0%</span>
             </div>
             <div class="gauge-row">
-                <span class="gauge-label">孫への愛情</span>
+                <span class="gauge-label">部下への愛情</span>
                 <div class="gauge-track">
                     <div class="gauge-fill gauge-fill-green" id="gauge3" style="width:100%"></div>
                 </div>
@@ -894,7 +952,7 @@
 
     <!-- タスクリスト -->
     <div class="list-header">
-        <span class="list-label">Pending Tasks</span>
+        <span class="list-label">未処理タスク一覧</span>
         <span class="list-badge">{{ tasks|length }} 件</span>
     </div>
 

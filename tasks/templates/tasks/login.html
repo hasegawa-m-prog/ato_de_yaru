@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - あとでやる</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink: #1a1410;
+            --ink-mid: #2d2218;
+            --paper: #f5f0e8;
+            --gold: #c9a84c;
+            --gold-dim: rgba(201,168,76,0.15);
+            --gold-border: rgba(201,168,76,0.3);
+            --vermillion: #c0392b;
+            --vermillion-dim: rgba(192,57,43,0.12);
+            --glass-bg: rgba(26,20,16,0.6);
+            --glass-bg-light: rgba(26,20,16,0.4);
+            --glass-border: rgba(201,168,76,0.2);
+            --glass-border-strong: rgba(201,168,76,0.4);
+            --text-primary: rgba(245,240,232,0.95);
+            --text-secondary: rgba(245,240,232,0.6);
+            --text-muted: rgba(245,240,232,0.3);
+            --shoji: rgba(245,240,232,0.04);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background: #0d0b08;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-atmosphere {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .atm-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+        }
+
+        .atm-glow-1 {
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+            top: -200px; right: -200px;
+            animation: atmDrift1 16s ease-in-out infinite;
+        }
+
+        .atm-glow-2 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(192,57,43,0.06) 0%, transparent 70%);
+            bottom: -150px; left: -150px;
+            animation: atmDrift2 20s ease-in-out infinite;
+        }
+
+        .atm-glow-3 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
+            top: 50%; left: 20%;
+            animation: atmDrift3 24s ease-in-out infinite;
+        }
+
+        @keyframes atmDrift1 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(-80px,60px) scale(1.1); }
+            66% { transform: translate(40px,-40px) scale(0.95); }
+        }
+        @keyframes atmDrift2 {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(100px,-80px) scale(1.15); }
+        }
+        @keyframes atmDrift3 {
+            0%,100% { transform: translate(0,0); }
+            33% { transform: translate(60px,60px); }
+            66% { transform: translate(-60px,-30px); }
+        }
+
+        .shoji-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(var(--shoji) 1px, transparent 1px),
+                linear-gradient(90deg, var(--shoji) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0,0,0,0.03) 3px,
+                rgba(0,0,0,0.03) 4px
+            );
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold) 70%, transparent 100%);
+            opacity: 0.4;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+        }
+
+        .auth-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-align: center;
+            margin-bottom: 40px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .auth-form {
+            padding: 36px 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(26,20,16,0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(26,20,16,0.6);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+        }
+
+        .form-help-text {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 16px;
+        }
+
+        .errorlist li {
+            background: var(--vermillion-dim);
+            border: 1px solid var(--vermillion);
+            color: rgba(192,57,43,0.9);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .non-field-errors {
+            background: var(--vermillion-dim);
+            border: 1px solid var(--vermillion);
+            color: rgba(192,57,43,0.9);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--gold) 0%, rgba(201,168,76,0.8) 100%);
+            border: none;
+            border-radius: 8px;
+            color: var(--ink);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .auth-footer a {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .auth-footer a:hover {
+            color: var(--paper);
+        }
+
+        .auth-footer p {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="bg-atmosphere">
+    <div class="atm-glow atm-glow-1"></div>
+    <div class="atm-glow atm-glow-2"></div>
+    <div class="atm-glow atm-glow-3"></div>
+</div>
+
+<div class="shoji-overlay"></div>
+<div class="scanlines"></div>
+
+<div class="auth-container">
+    <h1 class="auth-title">あとでやる</h1>
+    <p class="auth-subtitle">ログイン</p>
+    
+    <div class="glass-card auth-form">
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">ユーザー名</label>
+                <input type="text" name="username" id="{{ form.username.id_for_label }}" required>
+                {% if form.username.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">パスワード</label>
+                <input type="password" name="password" id="{{ form.password.id_for_label }}" required>
+                {% if form.password.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="submit-btn">ログイン</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>アカウントをお持ちでない方</p>
+            <a href="{% url 'signup' %}">サインアップ →</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script>
+    // Three.js 背景アニメーション
+    const canvas = document.getElementById('bgCanvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+
+    // パーティクル生成
+    const particleCount = 30;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 2000;
+        positions[i + 1] = (Math.random() - 0.5) * 2000;
+        positions[i + 2] = (Math.random() - 0.5) * 2000;
+    }
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    
+    const material = new THREE.PointsMaterial({
+        color: 0xc9a84c,
+        size: 2,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.4
+    });
+    
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+    camera.position.z = 1000;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        particles.rotation.x += 0.0001;
+        particles.rotation.y += 0.0002;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // ウィンドウリサイズ対応
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+
+</body>
+</html>
