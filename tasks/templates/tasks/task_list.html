@@ -1198,13 +1198,17 @@ let typeInterval = null;
 
 function typeWrite(text) {
     const el = document.getElementById('typewriterText');
+    const rawText = String(text || '').trim();
+    const displayText = rawText.startsWith('「') && rawText.endsWith('」')
+        ? rawText
+        : `「${rawText}」`;
     el.textContent = '';
     let i = 0;
     clearInterval(typeInterval);
     typeInterval = setInterval(() => {
-        el.textContent += text[i];
+        el.textContent += displayText[i];
         i++;
-        if (i >= text.length) clearInterval(typeInterval);
+        if (i >= displayText.length) clearInterval(typeInterval);
     }, 55);
 }
 
